@@ -214,13 +214,13 @@ document.getElementById('btn-confirm-friend').addEventListener('click', () => {
   },
   {
     id: '20',
-    name: '耶加雪菲水洗',
+    name: '耶加雪菲',
     roast_level: '淺焙',
     origin: '衣索比亞/耶加雪菲',
     variety: '原生種',
     process_method: '水洗',
     flavor_notes: '山茶花/甜橙/小紅莓/檸檬',
-    price: 900
+    price: 1000
   },
   {
     id: '21',
