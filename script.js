@@ -127,3 +127,24 @@ if (acceptBtn) {
     consentEl.style.display = 'none';
   });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const noticeToggle = document.getElementById('notice-toggle');
+  const noticeBody = document.getElementById('notice-body');
+  const noticeArrow = document.getElementById('notice-arrow');
+
+  if (noticeToggle && noticeBody && noticeArrow) {
+    noticeToggle.addEventListener('click', () => {
+      // 判斷目前是收合還是展開
+      if (noticeBody.style.maxHeight === '0px' || noticeBody.style.maxHeight === '0') {
+        // 展開：設定為內容的實際總高度 (scrollHeight)，並旋轉箭頭
+        noticeBody.style.maxHeight = noticeBody.scrollHeight + 'px';
+        noticeArrow.style.transform = 'rotate(180deg)';
+      } else {
+        // 收合：高度歸零，箭頭轉回來
+        noticeBody.style.maxHeight = '0';
+        noticeArrow.style.transform = 'rotate(0deg)';
+      }
+    });
+  }
+});
