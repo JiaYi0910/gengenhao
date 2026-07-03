@@ -54,11 +54,11 @@
             <form id="product-form">
                 <div class="form-group">
                     <label>商品名稱：</label>
-                    <input type="text" id="p-name" required placeholder="例如：頂級耶加雪菲夏茉卡">
+                    <input type="text" id="p-name">
                 </div>
                 <div class="form-group">
                     <label>價格 (NT$)：</label>
-                    <input type="number" id="p-price" required placeholder="例如：1000">
+                    <input type="number" id="p-price">
                 </div>
                 <div class="form-group">
                     <label>烘焙度：</label>
@@ -67,19 +67,20 @@
                         <option value="中焙">中焙</option>
                         <option value="中淺焙">中淺焙</option>
                         <option value="中深焙">中深焙</option>
+						<option value="深焙">深焙</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>產地：</label>
-                    <input type="text" id="p-origin" required placeholder="例如：衣索比亞">
+                    <input type="text" id="p-origin">
                 </div>
                 <div class="form-group">
                     <label>處理方式：</label>
-                    <input type="text" id="p-process" placeholder="例如：水洗 / 日曬">
+                    <input type="text" id="p-process">
                 </div>
                 <div class="form-group">
                     <label>風味敘述：</label>
-                    <textarea id="p-flavor" rows="2" placeholder="例如：甜橙、果汁、茉莉花"></textarea>
+                    <textarea id="p-flavor" rows="2"></textarea>
                 </div>
                 <button type="submit">確認新增並上架</button>
             </form>
