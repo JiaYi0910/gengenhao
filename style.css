@@ -296,26 +296,60 @@ body > div, main, .search-area, .notice-bar {
   border-radius: 5px;
   padding: 15px;
   flex-grow: 1;
-  min-width: 280px;     /* 稍微縮小最小寬度，適應小螢幕 */
-  max-width: 90vw;      /* 最大寬度改成90%視窗寬度，避免超出 */
+  min-width: 280px;      /* 稍微縮小最小寬度，適應小螢幕 */
+  max-width: 90vw;       /* 最大寬度改成90%視窗寬度，避免超出 */
   box-sizing: border-box; /* 確保padding不會讓寬度超出 */
   margin: 0 auto;       /* 置中(若是單獨區塊使用) */
-  margin-top:25px;
+  margin-top: 25px;
 }
 
-/* 📢 標題 */
+/* 新增：公告頂部標題區塊（含箭頭） */
+.notice-header {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  cursor: pointer;
+  user-select: none; /* 防止連續點擊時文字變藍色選取狀態 */
+}
+
+/* 📢 標題優化 */
 .notice-bar h3 {
   color: #2f4f4f;
-  margin-top: 0;
-  margin-bottom: 2rem;   /* 將標題底部距離加大 */
+  margin: 0; /* 清除上下間拒，讓收合時高度最精簡 */
+  font-size: 1.17rem;
+}
+
+/* 新增：右側小箭頭樣式 */
+#notice-arrow {
+  color: #2f4f4f;
+  font-size: 14px;
+  transition: transform 0.3s ease; /* 讓箭頭旋轉有流暢動畫 */
+}
+
+/* 修正：公告內容容器（控制動畫的核心） */
+.notice-content {
+  max-height: 0;            /* 預設隱藏 */
+  overflow: hidden;         /* 超出範圍隱藏 */
+  transition: max-height 0.3s ease-out; /* 展開時的平滑動畫 */
 }
 
 /* 📄 公告文字段落 */
 .notice-content p {
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
   color: #333;
-  margin-bottom: 1rem;   /* 段落間距 */
+  margin: 0;
+  padding-bottom: 1.5rem; /* 改用 padding 代替 margin-bottom，動畫展開時才不會抖動抖動 */
+}
+
+/* 讓第一個段落與標題之間有一點舒適的空隙 */
+.notice-content p:first-child {
+  padding-top: 1.5rem; 
+}
+
+/* 讓最後一個段落底部不要留太多空白 */
+.notice-content p:last-child {
+  padding-bottom: 0.5rem;
 }
 
 #line-friend-check {
