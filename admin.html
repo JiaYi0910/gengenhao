@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>將將好咖啡 - 正式版後台管理</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
+        h1, h2 { color: #4a3728; }
+        .form-section, .list-section, #login-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 4px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { background: #6f4e37; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #4a3728; }
+        .product-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 12px 0; }
+        .product-details { flex-grow: 1; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-left: 10px; }
+        .status-up { background: #e6f4ea; color: #137333; }
+        .status-down { background: #fce8e6; color: #c5221f; }
+        .actions button { margin-left: 5px; font-size: 14px; padding: 6px 10px; }
+        .btn-toggle { background: #1a73e8; }
+        .btn-delete { background: #d93025; }
+        #admin-content { display: none; } /* 預設隱藏管理內容，登入後才顯示 */
+        #btn-logout { background: #555; float: right; }
+    </style>
+</head>
+<body>
+
+    <!-- 登入區塊 -->
+    <section id="login-section">
+        <h2>🔒 管理員登入</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label>帳號 (Email)：</label>
+                <input type="email" id="login-email" required>
+            </div>
+            <div class="form-group">
+                <label>密碼：</label>
+                <input type="password" id="login-password" required>
+            </div>
+            <button type="submit">登入後台</button>
+        </form>
+    </section>
+
+    <!-- 真正的主後台內容 -->
+    <div id="admin-content">
+        <button id="btn-logout">登出系統</button>
+        <h1>☕ 將將好咖啡 後台管理系統 (正式安全版)</h1>
+
+        <!-- 新增商品表單 -->
+        <section class="form-section">
+            <h2>✨ 上架新咖啡豆</h2>
+            <form id="product-form">
+                <div class="form-group">
+                    <label>商品名稱：</label>
+                    <input type="text" id="p-name" required placeholder="例如：頂級耶加雪菲夏茉卡">
+                </div>
+                <div class="form-group">
+                    <label>價格 (NT$)：</label>
+                    <input type="number" id="p-price" required placeholder="例如：1000">
+                </div>
+                <div class="form-group">
+                    <label>烘焙度：</label>
+                    <select id="p-roast">
+                        <option value="淺焙">淺焙</option>
+                        <option value="中焙">中焙</option>
+                        <option value="中淺焙">中淺焙</option>
+                        <option value="中深焙">中深焙</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>產地：</label>
+                    <input type="text" id="p-origin" required placeholder="例如：衣索比亞">
+                </div>
+                <div class="form-group">
+                    <label>處理方式：</label>
+                    <input type="text" id="p-process" placeholder="例如：水洗 / 日曬">
+                </div>
+                <div class="form-group">
+                    <label>風味敘述：</label>
+                    <textarea id="p-flavor" rows="2" placeholder="例如：甜橙、果汁、茉莉花"></textarea>
+                </div>
+                <button type="submit">確認新增並上架</button>
+            </form>
+        </section>
+
+        <!-- 商品清單與控制 -->
+        <section class="list-section">
+            <h2>📋 目前全部商品清單</h2>
+            <div id="admin-product-list"></div>
+        </section>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // === 填入你的 Firebase Config ===
+        const firebaseConfig = {
+          apiKey: "YOUR_API_KEY",
+          authDomain: "YOUR_AUTH_DOMAIN",
+          projectId: "YOUR_PROJECT_ID",
+          storageBucket: "YOUR_STORAGE_BUCKET",
+          messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+          appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const productsRef = collection(db, "products");
+
+        const loginSection = document.getElementById('login-section');
+        const adminContent = document.getElementById('admin-content');
+
+        // 1. 監聽登入狀態切換 UI
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginSection.style.display = 'none';
+                adminContent.style.display = 'block';
+            } else {
+                loginSection.style.display = 'block';
+                adminContent.style.display = 'none';
+            }
+        });
+
+        // 2. 登入邏輯
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            signInWithEmailAndPassword(auth, email, password)
+                .catch(err => alert('登入失敗，請檢查帳密：' + err.message));
+        });
+
+        // 3. 登出邏輯
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        // 4. 新增商品邏輯
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newProduct = {
+                name: document.getElementById('p-name').value,
+                price: document.getElementById('p-price').value,
+                roast_level: document.getElementById('p-roast').value,
+                origin: document.getElementById('p-origin').value,
+                process_method: document.getElementById('p-process').value || '無',
+                flavor_notes: document.getElementById('p-flavor').value || '無',
+                status: '上架'
+            };
+            try {
+                await addDoc(productsRef, newProduct);
+                alert('商品新增成功！');
+                document.getElementById('product-form').reset();
+            } catch (error) {
+                alert("儲存失敗，請檢查權限：" + error.message);
+            }
+        });
+
+        // 5. 即時載入後台清單
+        const adminListContainer = document.getElementById('admin-product-list');
+        onSnapshot(productsRef, (querySnapshot) => {
+            adminListContainer.innerHTML = '';
+            querySnapshot.forEach((docSnap) => {
+                const item = docSnap.data();
+                const id = docSnap.id;
+                const div = document.createElement('div');
+                div.className = 'product-item';
+                const isUp = item.status === '上架';
+                
+                div.innerHTML = `
+                    <div class="product-details">
+                        <strong>${item.name}</strong> (NT$${item.price})
+                        <span class="status-badge ${isUp ? 'status-up' : 'status-down'}">${item.status}</span>
+                        <br><small>產地: ${item.origin} | 風味: ${item.flavor_notes}</small>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-toggle" data-id="${id}" data-status="${item.status}">${isUp ? '👇 下架' : '☝️ 上架'}</button>
+                        <button class="btn-delete" data-id="${id}">❌ 刪除</button>
+                    </div>
+                `;
+                adminListContainer.appendChild(div);
+            });
+
+            document.querySelectorAll('.btn-toggle').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    const nextStatus = e.target.getAttribute('data-status') === '上架' ? '下架' : '上架';
+                    await updateDoc(doc(db, "products", id), { status: nextStatus });
+                });
+            });
+
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    if(confirm('確定要永久刪除這個商品嗎？')) {
+                        await deleteDoc(doc(db, "products", id));
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
