@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>將將好咖啡 - 正式版後台管理</title>
+    <title>將將好咖啡 - 後台管理</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
         h1, h2 { color: #4a3728; }
@@ -46,7 +46,7 @@
     <!-- 真正的主後台內容 -->
     <div id="admin-content">
         <button id="btn-logout">登出系統</button>
-        <h1>☕ 將將好咖啡 後台管理系統 (正式安全版)</h1>
+        <h1>☕ 將將好咖啡 後台管理系統</h1>
 
         <!-- 新增商品表單 -->
         <section class="form-section">
@@ -98,14 +98,14 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // === 填入你的 Firebase Config ===
-        const firebaseConfig = {
-          apiKey: "YOUR_API_KEY",
-          authDomain: "YOUR_AUTH_DOMAIN",
-          projectId: "YOUR_PROJECT_ID",
-          storageBucket: "YOUR_STORAGE_BUCKET",
-          messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-          appId: "YOUR_APP_ID"
-        };
+		const firebaseConfig = {
+		apiKey: "AIzaSyBJ7FSvcaZjwWmWAjAmt9grWhzPYCwaTNQ",
+		  authDomain: "gengenhao-coffee.firebaseapp.com",
+		  projectId: "gengenhao-coffee", 
+		  storageBucket: "gengenhao-coffee.firebasestorage.app",
+		  messagingSenderId: "236932259007",
+		  appId: "1:236932259007:web:3b93dfdfd9d94447e2ba0a"
+		};
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
