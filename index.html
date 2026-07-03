@@ -43,8 +43,12 @@
 			<h2>GENGENHAO</h2>
 		</header>
 		<section class="notice-bar">
-			<h3>📢 本店公告</h3>
-			<div class="notice-content">
+			<div class="notice-header" id="notice-toggle" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+				<h3>📢 本店公告 (點擊展開/收合)</h3>
+				<span id="notice-arrow" style="transition: transform 0.3s; font-size: 18px;">▼</span>
+			</div>
+			
+			<div class="notice-content" id="notice-body" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;">
 				<p><strong>🛒 下單方式說明</strong><br>
 					本網站僅提供菜單瀏覽與商品資訊介紹，<br>
 					<strong>請透過 LINE 官方帳號進行下單與客服聯繫</strong>喔！<br>
